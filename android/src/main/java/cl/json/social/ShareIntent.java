@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v4.content.FileProvider;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -35,7 +37,8 @@ public abstract class ShareIntent {
         if (ShareIntent.hasValidKey("message", options) && ShareIntent.hasValidKey("url", options)) {
             ShareFile fileShare = getFileShare(options);
             if(fileShare.isFile()) {
-                Uri uriFile = fileShare.getURI();
+                File filePath = new File(fileShare.getURI().getPath());
+                Uri uriFile = FileProvider.getUriForFile(this.reactContext, this.reactContext.getPackageName(), filePath);
                 this.getIntent().setType(fileShare.getType());
                 this.getIntent().putExtra(Intent.EXTRA_STREAM, uriFile);
                 this.getIntent().putExtra(Intent.EXTRA_TEXT, options.getString("message"));
